@@ -1,7 +1,7 @@
 // Global variables
 let selectedFile = null;
 let currentProcessingData = null;
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3001';
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -155,16 +155,24 @@ async function processForm() {
     showLoading(true);
 
     try {
+        console.log('📁 Selected file:', selectedFile.name, selectedFile.size, selectedFile.type);
+        
         const formData = new FormData();
         formData.append('image', selectedFile);
         formData.append('form_type', 'menu_order');
 
+        console.log('🚀 Sending request to:', `${API_BASE_URL}/api/omr/process`);
+        
         const response = await fetch(`${API_BASE_URL}/api/omr/process`, {
             method: 'POST',
             body: formData
         });
 
         const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || result.message || `Server error: ${response.status}`);
+        }
 
         if (result.success) {
             currentProcessingData = result.data;

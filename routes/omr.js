@@ -57,7 +57,10 @@ pythonOMRProcessor.initialize()
   });
 
 // POST /api/omr/process - Process uploaded image
-router.post('/process', upload.single('image'), validate(schemas.omrProcess), asyncHandler(async (req, res) => {
+router.post('/process', upload.single('image'), asyncHandler(async (req, res) => {
+  console.log('📁 File upload received:', req.file ? 'Yes' : 'No');
+  console.log('📋 Form data:', req.body);
+  
   if (!req.file) {
     return res.status(400).json({
       success: false,

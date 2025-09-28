@@ -5,7 +5,7 @@ const fs = require('fs').promises;
 class PythonOMRProcessor {
   constructor() {
     this.pythonScriptPath = path.join(__dirname, '../python/omr_processor.py');
-    this.pythonExecutable = process.env.PYTHON_PATH || 'py'; // Use 'py' for Windows
+    this.pythonExecutable = process.env.PYTHON_PATH || 'python'; // Use 'python' for consistency
   }
 
   async checkPythonEnvironment() {
@@ -24,7 +24,7 @@ class PythonOMRProcessor {
     
     try {
       console.log('Installing Python dependencies...');
-      await this.runCommand('py', ['-m', 'pip', 'install', '-r', requirementsPath]);
+      await this.runCommand(this.pythonExecutable, ['-m', 'pip', 'install', '-r', requirementsPath]);
       console.log('Python dependencies installed successfully');
       return true;
     } catch (error) {
@@ -97,14 +97,20 @@ class PythonOMRProcessor {
 
   async processImage(imagePath) {
     try {
+      console.log('🐍 Starting Python OMR processing for:', imagePath);
+      
       // Check if image file exists
       await fs.access(imagePath);
+      console.log('✅ Image file exists');
       
       // Run Python OMR processor
+      console.log('🚀 Running Python script...');
       const result = await this.runPythonCommand([this.pythonScriptPath, imagePath]);
+      console.log('📄 Python script output:', result);
       
       // Parse JSON result
       const parsedResult = JSON.parse(result);
+      console.log('📊 Parsed result:', parsedResult);
       
       return {
         success: true,
@@ -112,7 +118,7 @@ class PythonOMRProcessor {
       };
       
     } catch (error) {
-      console.error('Python OMR processing failed:', error);
+      console.error('❌ Python OMR processing failed:', error);
       return {
         success: false,
         error: error.message,

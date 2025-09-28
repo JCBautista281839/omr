@@ -77,11 +77,16 @@ router.post('/process', upload.single('image'), asyncHandler(async (req, res) =>
     // Use Python OpenCV processor if available, otherwise fallback
     if (pythonProcessorReady) {
       console.log('🐍 Using Python OpenCV for OMR processing');
+      console.log('📁 Image path:', imagePath);
+      
       const pythonResult = await pythonOMRProcessor.processImage(imagePath);
+      console.log('🐍 Python result:', pythonResult);
       
       if (pythonResult.success) {
         result = pythonResult.data;
+        console.log('✅ Python processing successful');
       } else {
+        console.error('❌ Python processing failed:', pythonResult.error);
         throw new Error(`Python processing failed: ${pythonResult.error}`);
       }
     } else {

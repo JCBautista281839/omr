@@ -109,6 +109,8 @@ function handleDrop(event) {
 }
 
 function processSelectedFile(file) {
+    console.log('📁 File selected:', file.name, file.size, file.type);
+    
     // Validate file type
     if (!file.type.startsWith('image/')) {
         showToast('error', 'Invalid file type', 'Please select an image file (JPEG, PNG, etc.)');
@@ -122,6 +124,7 @@ function processSelectedFile(file) {
     }
 
     selectedFile = file;
+    console.log('✅ File stored in selectedFile:', selectedFile ? 'Yes' : 'No');
     
     // Update UI
     const uploadArea = document.getElementById('uploadArea');
@@ -147,6 +150,8 @@ function processSelectedFile(file) {
 
 // Form processing
 async function processForm() {
+    console.log('🚀 processForm called, selectedFile:', selectedFile ? 'Yes' : 'No');
+    
     if (!selectedFile) {
         showToast('error', 'No file selected', 'Please select an image file first');
         return;

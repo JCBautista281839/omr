@@ -85,16 +85,16 @@ router.post('/process', upload.single('image'), validate(schemas.omrProcess), as
       throw new Error('Python OMR processor not available');
     }
     
-    // Store processing result in database
-    const dbResult = await db.run(
-      'INSERT INTO omr_forms (form_type, image_path, processed_data, confidence_score) VALUES (?, ?, ?, ?)',
-      [form_type, imagePath, JSON.stringify(result), result.confidence]
-    );
+    // Skip database storage for now - just process the form
+    // const dbResult = await db.run(
+    //   'INSERT INTO omr_forms (form_type, image_path, processed_data, confidence_score) VALUES (?, ?, ?, ?)',
+    //   [form_type, imagePath, JSON.stringify(result), result.confidence]
+    // );
 
     res.json({
       success: true,
       data: {
-        id: dbResult.id,
+        id: Date.now(), // Temporary ID
         form_type,
         marks: result.marks,
         confidence: result.confidence,
@@ -253,19 +253,13 @@ router.post('/process-to-order', upload.single('image'), asyncHandler(async (req
   }
 }));
 
-// GET /api/omr/history - Get OMR processing history
+// GET /api/omr/history - Get OMR processing history (temporarily disabled)
 router.get('/history', asyncHandler(async (req, res) => {
-  const { limit = 20, offset = 0 } = req.query;
-  
-  const forms = await db.all(
-    'SELECT * FROM omr_forms ORDER BY created_at DESC LIMIT ? OFFSET ?',
-    [parseInt(limit), parseInt(offset)]
-  );
-  
   res.json({
     success: true,
-    data: forms,
-    count: forms.length
+    data: [],
+    count: 0,
+    message: 'History temporarily disabled for testing'
   });
 }));
 

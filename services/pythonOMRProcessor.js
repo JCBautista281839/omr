@@ -5,7 +5,7 @@ const fs = require('fs').promises;
 class PythonOMRProcessor {
   constructor() {
     this.pythonScriptPath = path.join(__dirname, '../python/omr_processor.py');
-    this.pythonExecutable = process.env.PYTHON_PATH || 'python3';
+    this.pythonExecutable = process.env.PYTHON_PATH || 'py'; // Use 'py' for Windows
   }
 
   async checkPythonEnvironment() {
@@ -24,7 +24,7 @@ class PythonOMRProcessor {
     
     try {
       console.log('Installing Python dependencies...');
-      await this.runCommand('pip3', ['install', '-r', requirementsPath]);
+      await this.runCommand('py', ['-m', 'pip', 'install', '-r', requirementsPath]);
       console.log('Python dependencies installed successfully');
       return true;
     } catch (error) {

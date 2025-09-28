@@ -11,7 +11,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false
+}));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' ? ['https://yourdomain.com'] : true,
   credentials: true
@@ -35,6 +37,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/api/menu', require('./routes/menu'));
@@ -51,8 +54,13 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Root endpoint
+// Root endpoint - serve frontend
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// API info endpoint
+app.get('/api', (req, res) => {
   res.json({
     message: 'OMR POS Backend API',
     version: '1.0.0',

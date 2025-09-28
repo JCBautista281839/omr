@@ -4,54 +4,13 @@ const db = require('../config/database');
 const { validate, schemas, asyncHandler } = require('../middleware/validation');
 const { v4: uuidv4 } = require('uuid');
 
-// GET /api/orders - Get all orders
+// GET /api/orders - Get all orders (temporarily disabled)
 router.get('/', asyncHandler(async (req, res) => {
-  const { status, limit = 50, offset = 0 } = req.query;
-  
-  let sql = `
-    SELECT o.*, 
-           GROUP_CONCAT(
-             json_object(
-               'id', oi.id,
-               'menu_item_id', oi.menu_item_id,
-               'quantity', oi.quantity,
-               'unit_price', oi.unit_price,
-               'total_price', oi.total_price,
-               'special_instructions', oi.special_instructions,
-               'menu_item_name', mi.name
-             )
-           ) as items
-    FROM orders o
-    LEFT JOIN order_items oi ON o.id = oi.order_id
-    LEFT JOIN menu_items mi ON oi.menu_item_id = mi.id
-    WHERE 1=1
-  `;
-  const params = [];
-  
-  if (status) {
-    sql += ' AND o.status = ?';
-    params.push(status);
-  }
-  
-  sql += ' GROUP BY o.id ORDER BY o.created_at DESC LIMIT ? OFFSET ?';
-  params.push(parseInt(limit), parseInt(offset));
-  
-  const orders = await db.all(sql, params);
-  
-  // Parse items JSON
-  const processedOrders = orders.map(order => ({
-    ...order,
-    items: order.items ? JSON.parse(`[${order.items}]`) : []
-  }));
-  
   res.json({
     success: true,
-    data: processedOrders,
-    count: processedOrders.length,
-    pagination: {
-      limit: parseInt(limit),
-      offset: parseInt(offset)
-    }
+    data: [],
+    count: 0,
+    message: 'Orders temporarily disabled for testing'
   });
 }));
 

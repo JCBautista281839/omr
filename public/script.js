@@ -173,7 +173,16 @@ async function processForm() {
             body: formData
         });
 
-        const result = await response.json();
+        // Check if response is JSON before parsing
+        let result;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            // Handle non-JSON responses (like rate limiting HTML)
+            const text = await response.text();
+            throw new Error(`Server error: ${response.status} - ${text}`);
+        }
 
         if (!response.ok) {
             throw new Error(result.error || result.message || `Server error: ${response.status}`);
@@ -282,7 +291,16 @@ async function createOrderFromData(data, customerName, tableNumber, notes) {
             body: formData
         });
 
-        const result = await response.json();
+        // Check if response is JSON before parsing
+        let result;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            // Handle non-JSON responses (like rate limiting HTML)
+            const text = await response.text();
+            throw new Error(`Server error: ${response.status} - ${text}`);
+        }
 
         if (result.success) {
             showToast('success', 'Order Created', `Order ${result.data.order.order_number} created successfully`);
@@ -337,7 +355,17 @@ async function loadInitialData() {
 async function loadOrders() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/orders`);
-        const result = await response.json();
+        
+        // Check if response is JSON before parsing
+        let result;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            // Handle non-JSON responses (like rate limiting HTML)
+            const text = await response.text();
+            throw new Error(`Server error: ${response.status} - ${text}`);
+        }
         
         const ordersGrid = document.getElementById('ordersGrid');
         
@@ -369,7 +397,17 @@ async function loadHistory() {
     try {
         const filter = document.getElementById('historyFilter').value;
         const response = await fetch(`${API_BASE_URL}/api/omr/history`);
-        const result = await response.json();
+        
+        // Check if response is JSON before parsing
+        let result;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            // Handle non-JSON responses (like rate limiting HTML)
+            const text = await response.text();
+            throw new Error(`Server error: ${response.status} - ${text}`);
+        }
         
         const historyList = document.getElementById('historyList');
         
@@ -413,7 +451,17 @@ async function testConnection() {
     
     try {
         const response = await fetch(`${apiUrl}/health`);
-        const result = await response.json();
+        
+        // Check if response is JSON before parsing
+        let result;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            // Handle non-JSON responses
+            const text = await response.text();
+            throw new Error(`Server error: ${response.status} - ${text}`);
+        }
         
         if (result.status === 'OK') {
             showToast('success', 'Connection Successful', 'API is responding correctly');
